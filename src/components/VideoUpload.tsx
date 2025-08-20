@@ -1,0 +1,193 @@
+import { useState } from 'react';
+import { Upload, Video, Download, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+
+type ProcessingStatus = 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
+
+export default function VideoUpload() {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<ProcessingStatus>('idle');
+  const [downloadUrl, setDownloadUrl] = useState<string>('');
+  const [processingMessage, setProcessingMessage] = useState<string>('');
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setStatus('idle');
+      setDownloadUrl('');
+    }
+  };
+
+  const handleUploadAndProcess = async () => {
+    if (!selectedFile) return;
+
+    try {
+      setStatus('uploading');
+      setProcessingMessage('Uploading your video...');
+
+      const formData = new FormData();
+      formData.append('video', selectedFile);
+
+      // Call your API endpoint
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/process-video`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      setStatus('processing');
+      setProcessingMessage('Processing your video into shorts format...');
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setStatus('completed');
+        setDownloadUrl(result.downloadUrl);
+        setProcessingMessage('Video processed successfully!');
+      } else {
+        throw new Error(result.error || 'Processing failed');
+      }
+    } catch (error) {
+      setStatus('error');
+      setProcessingMessage('Something went wrong. Please try again.');
+      console.error('Upload error:', error);
+    }
+  };
+
+  const resetForm = () => {
+    setSelectedFile(null);
+    setStatus('idle');
+    setDownloadUrl('');
+    setProcessingMessage('');
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="flex items-center space-x-2 mb-6">
+        <Video className="h-6 w-6 text-blue-600" />
+        <h2 className="text-2xl font-semibold text-gray-900">Video to Shorts</h2>
+      </div>
+
+      {status === 'idle' && (
+        <div className="space-y-4">
+          {/* File Upload */}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+            <Upload className="mx-auto h-12 w-12 text-gray-400" />
+            <div className="mt-4">
+              <label htmlFor="video-upload" className="cursor-pointer">
+                <span className="mt-2 block text-sm font-medium text-gray-900">
+                  Drop your video here, or{' '}
+                  <span className="text-blue-600 hover:text-blue-500">browse</span>
+                </span>
+              </label>
+              <input
+                id="video-upload"
+                type="file"
+                accept="video/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </div>
+            <p className="mt-2 text-xs text-gray-500">
+              Supports MP4, MOV, AVI up to 100MB
+            </p>
+          </div>
+
+          {/* Selected File Info */}
+          {selectedFile && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Video className="h-5 w-5 text-blue-600" />
+                  <span className="text-sm font-medium text-gray-900">
+                    {selectedFile.name}
+                  </span>
+                </div>
+                <span className="text-xs text-gray-500">
+                  {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Process Button */}
+          {selectedFile && (
+            <button
+              onClick={handleUploadAndProcess}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium"
+            >
+              Convert to Shorts
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Processing States */}
+      {(status === 'uploading' || status === 'processing') && (
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+          <div className="flex items-center justify-center space-x-2">
+            <Clock className="h-5 w-5 text-blue-600" />
+            <p className="text-lg font-medium text-gray-900">{processingMessage}</p>
+          </div>
+          <p className="text-sm text-gray-600">
+            This usually takes 2-5 minutes depending on video length
+          </p>
+        </div>
+      )}
+
+      {/* Completed State */}
+      {status === 'completed' && (
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <CheckCircle className="h-16 w-16 text-green-500" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900">Video Ready!</h3>
+          <p className="text-gray-600">Your short video has been generated successfully.</p>
+          
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href={downloadUrl}
+              download
+              className="inline-flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
+              <Download className="h-5 w-5" />
+              <span>Download Video</span>
+            </a>
+            <button
+              onClick={resetForm}
+              className="inline-flex items-center justify-center space-x-2 bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+            >
+              <Upload className="h-5 w-5" />
+              <span>Process Another</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {status === 'error' && (
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <AlertCircle className="h-16 w-16 text-red-500" />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900">Processing Failed</h3>
+          <p className="text-gray-600">{processingMessage}</p>
+          
+          <button
+            onClick={resetForm}
+            className="inline-flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            <Upload className="h-5 w-5" />
+            <span>Try Again</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
