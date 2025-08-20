@@ -1,5 +1,5 @@
 import { usePrivy } from '@privy-io/react-auth';
-import { LogOut, User, Video, FileText } from 'lucide-react';
+import { LogOut, User, Video } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,7 +37,7 @@ export default function Layout({ children }: LayoutProps) {
               <div className="flex items-center space-x-2">
                 <User className="h-5 w-5 text-gray-600" />
                 <span className="text-sm text-gray-700">
-                  {user?.email || 'Wallet User'}
+                  {user?.email?.toString() || 'Wallet User'}
                 </span>
               </div>
               <button

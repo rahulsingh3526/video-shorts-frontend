@@ -151,7 +151,7 @@ export default function TextToVideo() {
             >
               <Download className="h-5 w-5" />
               <span>Download Video</span>
-            </button>
+            </a>
             <button
               onClick={resetForm}
               className="inline-flex items-center justify-center space-x-2 bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors font-medium"
