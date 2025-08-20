@@ -111,7 +111,7 @@ The frontend communicates with your Python backend through API calls:
 
 ```env
 NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
-NEXT_PUBLIC_API_URL=https://your-backend-api.com
+NEXT_PUBLIC_API_URL=https://video-shorts-backend.onrender.com
 ```
 
 ## Next Steps
