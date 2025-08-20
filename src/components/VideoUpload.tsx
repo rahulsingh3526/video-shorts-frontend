@@ -28,7 +28,6 @@ export default function VideoUpload() {
       const formData = new FormData();
       formData.append('video', selectedFile);
 
-      // First try simple upload to test connectivity
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://video-shorts-backend.onrender.com';
       console.log('API URL being used:', apiUrl); // Debug log
       
@@ -41,14 +40,18 @@ export default function VideoUpload() {
         throw new Error('Upload failed');
       }
 
+      // Update to processing status
+      setStatus('processing');
+      setProcessingMessage('Processing your video into shorts format...');
+
       const result = await response.json();
       
       if (result.success) {
         setStatus('completed');
-        setProcessingMessage(`File uploaded successfully! Size: ${(result.size / 1024 / 1024).toFixed(1)}MB`);
-        setDownloadUrl(''); // No download for simple upload
+        setProcessingMessage('Video processed to shorts successfully!');
+        setDownloadUrl(`${apiUrl}${result.downloadUrl}`); // Set download URL
       } else {
-        throw new Error(result.error || 'Upload failed');
+        throw new Error(result.error || 'Processing failed');
       }
     } catch (error) {
       setStatus('error');
@@ -127,7 +130,7 @@ export default function VideoUpload() {
               onClick={handleUploadAndProcess}
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium"
             >
-              Upload Video (Test)
+              Convert to Shorts
             </button>
           )}
         </div>
@@ -144,7 +147,7 @@ export default function VideoUpload() {
             <p className="text-lg font-medium text-gray-900">{processingMessage}</p>
           </div>
           <p className="text-sm text-gray-600">
-            Testing simple file upload first...
+            Processing time varies from 2-30 minutes based on video length and complexity. Please be patient.
           </p>
         </div>
       )}
@@ -155,16 +158,26 @@ export default function VideoUpload() {
           <div className="flex justify-center">
             <CheckCircle className="h-16 w-16 text-green-500" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900">Upload Complete!</h3>
+          <h3 className="text-xl font-semibold text-gray-900">Video Ready!</h3>
           <p className="text-gray-600">{processingMessage}</p>
           
-          <div className="flex justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            {downloadUrl && (
+              <a
+                href={downloadUrl}
+                download
+                className="inline-flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium"
+              >
+                <Download className="h-5 w-5" />
+                <span>Download Short Video</span>
+              </a>
+            )}
             <button
               onClick={resetForm}
               className="inline-flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
               <Upload className="h-5 w-5" />
-              <span>Upload Another</span>
+              <span>Process Another</span>
             </button>
           </div>
         </div>
