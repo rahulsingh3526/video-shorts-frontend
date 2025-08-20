@@ -16,7 +16,10 @@ export default function TextToVideo() {
       setStatus('processing');
       setProcessingMessage('Generating video from your text...');
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/process-text`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://video-shorts-backend.onrender.com';
+      console.log('API URL being used:', apiUrl); // Debug log
+      
+      const response = await fetch(`${apiUrl}/api/process-text`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

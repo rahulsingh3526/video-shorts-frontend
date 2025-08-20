@@ -32,7 +32,10 @@ export default function VideoUpload() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/process-video`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://video-shorts-backend.onrender.com';
+      console.log('API URL being used:', apiUrl); // Debug log
+      
+      const response = await fetch(`${apiUrl}/api/process-video`, {
         method: 'POST',
         body: formData,
         signal: controller.signal,
