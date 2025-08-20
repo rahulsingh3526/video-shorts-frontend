@@ -45,28 +45,29 @@ export default function VideoUpload() {
       setProcessingMessage('Processing your video into shorts format...');
 
       const result = await response.json();
+      console.log('Backend response:', result); // Debug the actual response
       
       if (result.success) {
         setStatus('completed');
         setProcessingMessage('Video processed to shorts successfully!');
         const fullDownloadUrl = `${apiUrl}/${result.downloadUrl}`;
-        console.log('Download URL constructed:', fullDownloadUrl); // Debug log
+        console.log('Download URL constructed:', fullDownloadUrl);
         setDownloadUrl(fullDownloadUrl);
       } else {
-        throw new Error(result.error || 'Processing failed');
+        // Show the actual backend error instead of generic message
+        const errorMsg = result.error || 'Processing failed';
+        console.error('Backend processing error:', errorMsg);
+        throw new Error(errorMsg);
       }
     } catch (error) {
       setStatus('error');
       if (error instanceof Error) {
-        if (error.message.includes('NetworkError') || error.message.includes('fetch')) {
-          setProcessingMessage('Network error. Please check your connection and try again.');
-        } else {
-          setProcessingMessage(`Error: ${error.message}`);
-        }
+        // Show the actual error message from backend
+        setProcessingMessage(`Error: ${error.message}`);
       } else {
         setProcessingMessage('Something went wrong. Please try again.');
       }
-      console.error('Upload error:', error);
+      console.error('Processing error:', error);
     }
   };
 
