@@ -30,7 +30,7 @@ export default function VideoUpload() {
 
       // Call your API endpoint
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
+      const timeoutId = setTimeout(() => controller.abort(), 900000); // 15 minute timeout
       
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://video-shorts-backend.onrender.com';
       console.log('API URL being used:', apiUrl); // Debug log
