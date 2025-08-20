@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Upload, Video, Download, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 type ProcessingStatus = 'idle' | 'uploading' | 'processing' | 'completed' | 'error';
+type ProcessingMode = 'simple' | 'advanced';
 
 export default function VideoUpload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [status, setStatus] = useState<ProcessingStatus>('idle');
   const [downloadUrl, setDownloadUrl] = useState<string>('');
   const [processingMessage, setProcessingMessage] = useState<string>('');
+  const [processingMode, setProcessingMode] = useState<ProcessingMode>('advanced');
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -30,8 +32,12 @@ export default function VideoUpload() {
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://video-shorts-backend.onrender.com';
       console.log('API URL being used:', apiUrl); // Debug log
+      console.log('Processing mode:', processingMode); // Debug log
       
-      const response = await fetch(`${apiUrl}/api/upload-video`, {
+      // Choose endpoint based on processing mode
+      const endpoint = processingMode === 'advanced' ? '/api/create-split-screen' : '/api/upload-video';
+      
+      const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         body: formData,
       });
@@ -40,9 +46,13 @@ export default function VideoUpload() {
         throw new Error('Upload failed');
       }
 
-      // Update to processing status
+      // Update to processing status with appropriate message
       setStatus('processing');
-      setProcessingMessage('Processing your video into shorts format...');
+      if (processingMode === 'advanced') {
+        setProcessingMessage('Creating split-screen video with Minecraft background and subtitles...');
+      } else {
+        setProcessingMessage('Processing your video into shorts format...');
+      }
 
       const result = await response.json();
       console.log('Backend response:', result); // Debug the actual response
@@ -127,13 +137,54 @@ export default function VideoUpload() {
             </div>
           )}
 
+          {/* Processing Mode Selection */}
+          {selectedFile && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-medium text-gray-900">Choose Processing Mode</h3>
+              <div className="space-y-2">
+                <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="processingMode"
+                    value="advanced"
+                    checked={processingMode === 'advanced'}
+                    onChange={(e) => setProcessingMode(e.target.value as ProcessingMode)}
+                    className="text-blue-600"
+                  />
+                  <div>
+                    <div className="font-medium text-gray-900">🎮 Advanced Split-Screen</div>
+                    <div className="text-sm text-gray-600">
+                      Top: Your video | Bottom: Minecraft gameplay with subtitles
+                    </div>
+                  </div>
+                </label>
+                <label className="flex items-center space-x-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="processingMode"
+                    value="simple"
+                    checked={processingMode === 'simple'}
+                    onChange={(e) => setProcessingMode(e.target.value as ProcessingMode)}
+                    className="text-blue-600"
+                  />
+                  <div>
+                    <div className="font-medium text-gray-900">📱 Simple Vertical</div>
+                    <div className="text-sm text-gray-600">
+                      Basic landscape to vertical conversion
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          )}
+
           {/* Process Button */}
           {selectedFile && (
             <button
               onClick={handleUploadAndProcess}
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium"
             >
-              Convert to Shorts
+              {processingMode === 'advanced' ? '🎮 Create Split-Screen Video' : '📱 Convert to Vertical'}
             </button>
           )}
         </div>
@@ -150,7 +201,10 @@ export default function VideoUpload() {
             <p className="text-lg font-medium text-gray-900">{processingMessage}</p>
           </div>
           <p className="text-sm text-gray-600">
-            Converting landscape video to vertical shorts format...
+            {processingMode === 'advanced' 
+              ? 'Creating split-screen video with voice transcription and Minecraft gameplay...'
+              : 'Converting landscape video to vertical shorts format...'
+            }
           </p>
         </div>
       )}
