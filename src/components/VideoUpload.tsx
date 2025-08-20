@@ -28,20 +28,14 @@ export default function VideoUpload() {
       const formData = new FormData();
       formData.append('video', selectedFile);
 
-      // Call your API endpoint
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 900000); // 15 minute timeout
-      
+      // Call your API endpoint - no timeout, wait for completion
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://video-shorts-backend.onrender.com';
       console.log('API URL being used:', apiUrl); // Debug log
       
       const response = await fetch(`${apiUrl}/api/process-video`, {
         method: 'POST',
         body: formData,
-        signal: controller.signal,
       });
-      
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error('Upload failed');
@@ -62,9 +56,7 @@ export default function VideoUpload() {
     } catch (error) {
       setStatus('error');
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          setProcessingMessage('Video processing timed out. Please try with a smaller file.');
-        } else if (error.message.includes('NetworkError') || error.message.includes('fetch')) {
+        if (error.message.includes('NetworkError') || error.message.includes('fetch')) {
           setProcessingMessage('Network error. Please check your connection and try again.');
         } else {
           setProcessingMessage(`Error: ${error.message}`);
@@ -155,7 +147,7 @@ export default function VideoUpload() {
             <p className="text-lg font-medium text-gray-900">{processingMessage}</p>
           </div>
           <p className="text-sm text-gray-600">
-            This usually takes 2-5 minutes depending on video length
+            Processing time varies from 2-30 minutes based on video length and complexity. Please be patient.
           </p>
         </div>
       )}
