@@ -49,7 +49,9 @@ export default function VideoUpload() {
       if (result.success) {
         setStatus('completed');
         setProcessingMessage('Video processed to shorts successfully!');
-        setDownloadUrl(`${apiUrl}${result.downloadUrl}`); // Set download URL
+        const fullDownloadUrl = `${apiUrl}/${result.downloadUrl}`;
+        console.log('Download URL constructed:', fullDownloadUrl); // Debug log
+        setDownloadUrl(fullDownloadUrl);
       } else {
         throw new Error(result.error || 'Processing failed');
       }
