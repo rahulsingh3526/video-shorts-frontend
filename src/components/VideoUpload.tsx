@@ -149,7 +149,7 @@ export default function VideoUpload() {
             <p className="text-lg font-medium text-gray-900">{processingMessage}</p>
           </div>
           <p className="text-sm text-gray-600">
-            Processing time varies from 2-30 minutes based on video length and complexity. Please be patient.
+            Converting landscape video to vertical shorts format...
           </p>
         </div>
       )}
