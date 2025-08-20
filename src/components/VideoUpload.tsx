@@ -29,10 +29,16 @@ export default function VideoUpload() {
       formData.append('video', selectedFile);
 
       // Call your API endpoint
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/process-video`, {
         method: 'POST',
         body: formData,
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error('Upload failed');
@@ -52,7 +58,17 @@ export default function VideoUpload() {
       }
     } catch (error) {
       setStatus('error');
-      setProcessingMessage('Something went wrong. Please try again.');
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          setProcessingMessage('Video processing timed out. Please try with a smaller file.');
+        } else if (error.message.includes('NetworkError') || error.message.includes('fetch')) {
+          setProcessingMessage('Network error. Please check your connection and try again.');
+        } else {
+          setProcessingMessage(`Error: ${error.message}`);
+        }
+      } else {
+        setProcessingMessage('Something went wrong. Please try again.');
+      }
       console.error('Upload error:', error);
     }
   };
