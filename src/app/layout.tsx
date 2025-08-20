@@ -26,7 +26,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <PrivyProvider
-          appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID as string}
+          appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID || 'clp_demo_app_id'}
           config={{
             loginMethods: ['email', 'wallet'],
             appearance: {
