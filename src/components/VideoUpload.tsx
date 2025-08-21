@@ -48,7 +48,7 @@ export default function VideoUpload() {
 
       // Update to processing status with appropriate message
       setStatus('processing');
-      setProcessingMessage('Creating memory-optimized split-screen video with Minecraft-style background and subtitles...');
+      setProcessingMessage('Creating 720p split-screen video with voice transcription, Minecraft background and subtitles...');
 
       const result = await response.json();
       console.log('Backend response:', result); // Debug the actual response
@@ -197,7 +197,7 @@ export default function VideoUpload() {
             <p className="text-lg font-medium text-gray-900">{processingMessage}</p>
           </div>
           <p className="text-sm text-gray-600">
-            Memory-optimized processing: Voice transcription + Minecraft-style background + Split-screen layout
+            720p optimized processing: Voice transcription + Minecraft background + Subtitles + Split-screen layout
           </p>
         </div>
       )}

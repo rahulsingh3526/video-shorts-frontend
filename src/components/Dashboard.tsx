@@ -13,7 +13,7 @@ export default function Dashboard() {
       id: 'video' as ActiveTab,
       name: 'Video to Shorts',
       icon: Video,
-      description: 'Memory-optimized split-screen with Minecraft background + subtitles',
+      description: '720p optimized: Voice transcription + Minecraft background + Subtitles',
     },
     {
       id: 'text' as ActiveTab,
