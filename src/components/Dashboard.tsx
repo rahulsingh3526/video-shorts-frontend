@@ -1,19 +1,26 @@
 import { useState } from 'react';
-import { Video, FileText, BarChart3, Clock, Download } from 'lucide-react';
+import { Video, FileText, BarChart3, Clock, Download, Cloud } from 'lucide-react';
 import VideoUpload from './VideoUpload';
+import CloudinaryVideoUpload from './CloudinaryVideoUpload';
 import TextToVideo from './TextToVideo';
 
-type ActiveTab = 'video' | 'text' | 'history';
+type ActiveTab = 'video' | 'cloudinary' | 'text' | 'history';
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('video');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('cloudinary');
 
   const tabs = [
     {
+      id: 'cloudinary' as ActiveTab,
+      name: 'Cloudinary Pro',
+      icon: Cloud,
+      description: 'Advanced processing with unlimited power',
+    },
+    {
       id: 'video' as ActiveTab,
-      name: 'Video to Shorts',
+      name: 'Basic Processing',
       icon: Video,
-      description: 'Convert your videos to engaging short format',
+      description: 'Simple video conversion (limited by memory)',
     },
     {
       id: 'text' as ActiveTab,
@@ -68,6 +75,7 @@ export default function Dashboard() {
 
         {/* Tab Content */}
         <div className="p-6">
+          {activeTab === 'cloudinary' && <CloudinaryVideoUpload />}
           {activeTab === 'video' && <VideoUpload />}
           {activeTab === 'text' && <TextToVideo />}
           {activeTab === 'history' && <HistoryTab />}
