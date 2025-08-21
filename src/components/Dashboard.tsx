@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Video, FileText, BarChart3, Clock, Download } from 'lucide-react';
 import VideoUpload from './VideoUpload';
 import TextToVideo from './TextToVideo';
+import BackendStatus from './BackendStatus';
 
 type ActiveTab = 'video' | 'text' | 'history';
 
@@ -38,6 +39,9 @@ export default function Dashboard() {
           Transform your content into engaging short-form videos with AI-powered processing.
         </p>
       </div>
+
+      {/* Backend Status */}
+      <BackendStatus />
 
       {/* Tab Navigation */}
       <div className="bg-white rounded-lg shadow-sm">

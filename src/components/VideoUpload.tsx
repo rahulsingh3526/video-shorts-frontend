@@ -30,6 +30,7 @@ export default function VideoUpload() {
       const formData = new FormData();
       formData.append('video', selectedFile);
 
+      // Get API URL from environment or use default
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://video-shorts-backend.onrender.com';
       console.log('API URL being used:', apiUrl); // Debug log
       console.log('Processing mode:', processingMode); // Debug log
@@ -37,13 +38,27 @@ export default function VideoUpload() {
       // Always use the optimized split-screen endpoint for main functionality
       const endpoint = '/api/create-split-screen';
       
+      // Test if backend is accessible first
+      try {
+        const healthCheck = await fetch(`${apiUrl}/`);
+        if (!healthCheck.ok) {
+          throw new Error(`Backend not accessible: ${healthCheck.status}`);
+        }
+        console.log('✅ Backend is accessible');
+      } catch (error) {
+        console.error('❌ Backend health check failed:', error);
+        throw new Error(`Cannot connect to backend at ${apiUrl}. Please check if it's running.`);
+      }
+      
       const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errorText = await response.text();
+        console.error('Backend response error:', response.status, errorText);
+        throw new Error(`Upload failed: ${response.status} - ${errorText}`);
       }
 
       // Update to processing status with appropriate message
