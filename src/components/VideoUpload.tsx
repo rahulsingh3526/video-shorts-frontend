@@ -34,8 +34,8 @@ export default function VideoUpload() {
       console.log('API URL being used:', apiUrl); // Debug log
       console.log('Processing mode:', processingMode); // Debug log
       
-      // Choose endpoint based on processing mode
-      const endpoint = processingMode === 'advanced' ? '/api/create-split-screen' : '/api/upload-video';
+      // Always use the optimized split-screen endpoint for main functionality
+      const endpoint = '/api/create-split-screen';
       
       const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
@@ -48,11 +48,7 @@ export default function VideoUpload() {
 
       // Update to processing status with appropriate message
       setStatus('processing');
-      if (processingMode === 'advanced') {
-        setProcessingMessage('Creating split-screen video with Minecraft background and subtitles...');
-      } else {
-        setProcessingMessage('Processing your video into shorts format...');
-      }
+      setProcessingMessage('Creating memory-optimized split-screen video with Minecraft-style background and subtitles...');
 
       const result = await response.json();
       console.log('Backend response:', result); // Debug the actual response
@@ -201,10 +197,7 @@ export default function VideoUpload() {
             <p className="text-lg font-medium text-gray-900">{processingMessage}</p>
           </div>
           <p className="text-sm text-gray-600">
-            {processingMode === 'advanced' 
-              ? 'Creating split-screen video with voice transcription and Minecraft gameplay...'
-              : 'Converting landscape video to vertical shorts format...'
-            }
+            Memory-optimized processing: Voice transcription + Minecraft-style background + Split-screen layout
           </p>
         </div>
       )}

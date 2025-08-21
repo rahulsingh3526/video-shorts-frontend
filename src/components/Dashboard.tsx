@@ -7,7 +7,7 @@ import TextToVideo from './TextToVideo';
 type ActiveTab = 'video' | 'cloudinary' | 'text' | 'history';
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('cloudinary');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('video');
 
   const tabs = [
     {
@@ -18,9 +18,9 @@ export default function Dashboard() {
     },
     {
       id: 'video' as ActiveTab,
-      name: 'Basic Processing',
+      name: 'Video to Shorts',
       icon: Video,
-      description: 'Simple video conversion (limited by memory)',
+      description: 'Memory-optimized split-screen with Minecraft background + subtitles',
     },
     {
       id: 'text' as ActiveTab,
